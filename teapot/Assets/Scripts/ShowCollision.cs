@@ -1,45 +1,57 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class ShowCollision : MonoBehaviour
 {
+    [SerializeField]
+    public GameObject TeaPot, Cylinder;
 
     [SerializeField]
-    public GameObject TeaPot, Cylinder, Can;
+    private Text displayText;
 
     Collider tp_collider, c_collider;
 
-    Rigidbody tp_rigid, c_rigid;
+    private string defaultDisplay = "Intersections at: \n";
 
 
+    // Start is called before the first frame update
     void Start()
     {
-        Can.SetActive(false);
-
         if (TeaPot != null)
+        {
             tp_collider = TeaPot.GetComponent<Collider>();
-            tp_rigid = TeaPot.GetComponent<Rigidbody>();
+        }
 
         if (Cylinder != null)
+        {
             c_collider = Cylinder.GetComponent<Collider>();
-            c_rigid = Cylinder.GetComponent<Rigidbody>();
+        }
     }
 
+    // Update is called once per frame
     void Update()
     {
         if (tp_collider.bounds.Intersects(c_collider.bounds))
         {
-            Can.SetActive(true);
-            c_rigid.useGravity = false;
-            c_collider.isTrigger = true;
-        }
 
+            Debug.Log(defaultDisplay);
+
+            Collider[] intersections = Physics.OverlapSphere(transform.position, transform.localScale.x);
+
+
+            foreach (Collider intersection in intersections)
+            {
+                Vector3 coordvec = intersection.transform.position;
+
+                displayText.text += coordvec.ToString();
+
+            }
+        }
         else
         {
-            Can.SetActive(false);
-            c_rigid.useGravity = true;
-            c_collider.isTrigger = false;
+            displayText.text = defaultDisplay;
         }
     }
 }
